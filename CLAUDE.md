@@ -5,3 +5,4 @@
 - Don't paraphrase too much or add information they didn't mention
 - Keep a conversational, personal tone - not too dry
 - Use first person ("I found that...") to maintain authenticity
+- Never use em dashes
