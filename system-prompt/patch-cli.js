@@ -93,6 +93,9 @@ assistant: Clients are marked as failed in the \\\`connectToServer\\\` function 
   { name: 'Slim Grep multiline param (112 → 40 chars)', file: 'grep-params-multiline' },
   { name: 'Slim Grep type param (114 → 30 chars)', file: 'grep-params-type' },
   { name: 'Slim Grep -A/-B/-C params (~300 → 90 chars)', file: 'grep-params-context' },
+  // Round 7 - Remove redundant parallel calls guidance
+  { name: 'Remove parallel calls from Glob (~50 tokens)', file: 'glob-parallel-calls' },
+  { name: 'Remove parallel calls from Read (~50 tokens)', file: 'read-parallel-calls' },
 ];
 
 // Helper: compute SHA256 hash
