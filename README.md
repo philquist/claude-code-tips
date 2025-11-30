@@ -82,4 +82,4 @@ After Claude writes it, review it quickly. If something's missing, ask for edits
 
 > Did you add a note about iteratively testing instead of trying to do everything all at once?
 
-Then start a fresh conversation. The new Claude instance can read that one file and pick up right where you left off, with fresh context.
+Then start a fresh conversation. The new Claude instance can read that one file and pick up right where you left off, with fresh context. In subsequent conversations, you can ask the agent to update the document for the next agent.
