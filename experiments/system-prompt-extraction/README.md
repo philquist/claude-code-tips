@@ -5,7 +5,21 @@ Extracts the system prompt from the Claude Code CLI bundle.
 ## Files
 
 - `extract-system-prompt.js` - Node.js script to extract the prompt
-- `system-prompt.txt` - Extracted system prompt (partial)
+- `system-prompt.txt` - Extracted system prompt (~31KB)
+
+## Results
+
+Extracted content includes:
+- Identity and security guidelines
+- Tone and style instructions
+- Professional objectivity guidelines
+- Task management with examples
+- Doing tasks guidelines (with over-engineering warnings)
+- Tool usage policy
+- Git commit guidelines
+- Pull request guidelines
+- Code references
+- All tool descriptions (Bash, Read, Write, Edit, Glob, Grep, Task, etc.)
 
 ## How it works
 
@@ -18,8 +32,10 @@ The system prompt is:
 
 The extraction script:
 1. Finds each major section by its header (e.g., "# Tone and style")
-2. Extracts text until the template literal ends
-3. Replaces known minified variable names with readable ones
+2. Handles conditional template patterns like `${W.has(X)?`...`:""}`
+3. Extracts content across function boundaries
+4. Replaces minified variable names with readable ones
+5. Resolves known numeric values (timeouts, limits)
 
 ## Usage
 
@@ -27,15 +43,18 @@ The extraction script:
 node extract-system-prompt.js [output-file]
 ```
 
-## Limitations
+## What's NOT captured
 
-Some sections are truncated where JavaScript conditionals break the template:
-```javascript
-${Y!==null?"":` ... `}  // Conditional inclusion
-${W.has(toolName)?` ... `:``}  // Tool availability check
-```
+Dynamic content injected at runtime:
+- Environment info (working directory, platform, date)
+- Git status snapshot
+- Model info ("You are powered by...")
+- Allowed tools list (tools that don't need approval)
+- CLAUDE.md file contents
+- MCP server instructions
+- Custom output styles
 
-For the complete prompt, either:
+For complete runtime prompt, either:
 1. Ask Claude to output its own system prompt
 2. Intercept the API call with a proxy (e.g., mitmproxy)
 3. Use Node debugger to inspect at runtime
@@ -57,3 +76,5 @@ These change with each minified build:
 | uY | Grep |
 | uJ | AskUserQuestion |
 | ZC.agentType | Explore |
+| uzA | 2000 (line limit) |
+| kj9 | 600000 (10 min timeout) |
