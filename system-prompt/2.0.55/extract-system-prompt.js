@@ -564,7 +564,7 @@ output = output.replace(/Uses the \[DYNAMIC\] tool/g, 'Uses the Task tool');
 output = output.replace(/\[DYNAMIC\]/g, 'Task');
 
 // Write output
-const outputPath = process.argv[2] || path.join(__dirname, 'system-prompt.md');
+const outputPath = process.argv[2] || path.join(__dirname, 'system-prompt-original-unpatched.md');
 fs.writeFileSync(outputPath, output);
 
 const lineCount = output.split('\n').length;

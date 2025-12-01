@@ -41,7 +41,7 @@ system-prompt/
 ├── patch-cli.js               # Applies all patches (idempotent)
 ├── extract-system-prompt.js   # Extracts prompt for verification
 ├── patches/                   # Patch files (find/replace pairs)
-├── system-prompt.md           # Original extracted prompt (reference)
+├── system-prompt-original-unpatched.md  # Original extracted prompt (reference)
 └── README.md
 ```
 
