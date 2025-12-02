@@ -1,4 +1,4 @@
-# 30 Claude Code Tips: From Basics to Advanced (Work in Progress - 16 tips so far)
+# 30 Claude Code Tips: From Basics to Advanced (Work in Progress - 17 tips so far)
 
 Tips for getting the most out of Claude Code - includes a custom status line script, system prompt patching, and using Gemini CLI as Claude Code's minion.
 
@@ -233,6 +233,8 @@ This is still experimental - I'm testing it across different types of tasks to m
 
 Check out the [system-prompt folder](system-prompt/2.0.55/) for the patch scripts and full details on what gets trimmed.
 
+**Important**: If you want to keep your patched system prompt, disable auto-updates by adding `export DISABLE_AUTOUPDATER=1` to your shell config (e.g., `~/.zshrc`). Otherwise Claude Code will auto-update and overwrite your patches. You can manually update later with `claude update` when you're ready to re-apply patches to a new version.
+
 ## Tip 13: Git worktrees for parallel branch work
 
 If you're working on multiple files or multiple branches and you don't want them to get conflicted, Git worktrees are a great way to work on them at the same time. You can just ask Claude Code to create a git worktree and start working on it there - you don't have to worry about the specific syntax.
@@ -271,3 +273,15 @@ Claude Code will then check with increasing intervals:
 ```
 
 And it keeps going until the job completes.
+
+## Tip 16: Claude Code as a writing assistant
+
+Claude Code is an excellent writing assistant and partner. The way I use it for writing is I first give it all the context about what I'm trying to write, and then I give it detailed instructions by speaking to it using my voice. That gives me the first draft. If it's not good enough, I try a few times.
+
+Then I go through it line by line, pretty much. I say okay, let's take a look at it together. I like this line for these reasons. I feel like this line needs to move over there. This line needs to change in this particular way. I might ask about reference materials as well.
+
+So it's this sort of back-and-forth process, maybe with the terminal on the left and your code editor on the right:
+
+![Side-by-side writing workflow with Claude Code](writing-assistant-side-by-side.png)
+
+That tends to work really well.
