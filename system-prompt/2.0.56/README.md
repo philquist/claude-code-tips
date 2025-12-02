@@ -1,63 +1,30 @@
-# System Prompt Extraction & Slimming
+# System Prompt Patching for v2.0.56
 
-Extract and slim Claude Code's system prompt from the CLI bundle.
-
-## Results
-
-### Extracted Prompt Size
-
-From comparing `extract-system-prompt.js` output before and after patching:
-
-- **Original**: 830 lines, 52,590 chars
-- **After 33 patches**: ~23,200 chars (static template)
-- **Savings**: ~29KB (~56% reduction in static content)
-
-### Measured Token Savings
-
-From `/context` command in Claude Code (shows actual runtime token counts):
-
-| Component | Unpatched | Patched | Savings |
-|-----------|-----------|---------|---------|
-| System prompt | 3.0k | 2.4k | 600 tokens |
-| System tools | 14.6k | 8.1k | 6,500 tokens |
-| Other | ~0.4k | ~0.4k | 0 |
-| **Static total** | **~18k** | **~11k** | **~7,100 tokens (39%)** |
-| Allowed tools list | ~2.5-3.5k | 0 | ~3,000 tokens |
-| **Total (with allowed tools)** | **~21k** | **~11k** | **~10,000 tokens (48%)** |
-
-The allowed tools row is estimated from Claude's self-reported token count when asked to analyze the list. This varies by project - with 70+ approved commands, the list was ~8,000-10,000 characters (~2,500-3,500 tokens).
-
-### Before/After Screenshots
-
-| Unpatched | Patched |
-|-----------|---------|
-| ![Unpatched context usage](context-unpatched.png) | ![Patched context usage](context-patched.png) |
-
-## File Structure
-
-```
-system-prompt/
-├── backup-cli.sh              # Creates verified backup
-├── restore-cli.sh             # Restores from backup
-├── patch-cli.js               # Applies all patches (idempotent)
-├── extract-system-prompt.js   # Extracts prompt for verification
-├── patches/                   # Patch files (find/replace pairs)
-├── system-prompt-original-unpatched.md  # Original extracted prompt (reference)
-└── README.md
-```
+Patches to slim Claude Code's system prompt. See [2.0.55](../2.0.55/) for measured token savings and screenshots.
 
 ## Quick Start
 
 ```bash
 # Apply all patches (restores from backup first, so idempotent)
-# Auto-detects CLI path from shell rc files or uses default location
 node patch-cli.js
 
-# Verify with extraction (also auto-detects, or use CLI_PATH env var)
+# Verify with extraction
 node extract-system-prompt.js /tmp/patched.md
 
 # Restore original
 ./restore-cli.sh
+```
+
+## File Structure
+
+```
+2.0.56/
+├── backup-cli.sh              # Creates verified backup
+├── restore-cli.sh             # Restores from backup
+├── patch-cli.js               # Applies all patches (idempotent)
+├── extract-system-prompt.js   # Extracts prompt for verification
+├── patches/                   # Patch files (find/replace pairs)
+└── system-prompt-original-unpatched.md  # Original extracted prompt
 ```
 
 ## Patches Applied (33 total)
@@ -96,50 +63,6 @@ node extract-system-prompt.js /tmp/patched.md
 32. Removed duplicate security warning (~200 tokens)
 33. Slimmed parallel calls guidance (~100 tokens)
 
-## Adding New Patches
-
-### Small patches (inline in patch-cli.js):
-```javascript
-{
-  name: 'Description of patch',
-  find: `exact string to find`,
-  replace: `replacement string`
-}
-```
-
-### Large patches (file-based):
-1. Create `patches/patch-name.find.txt` with exact text to find
-2. Create `patches/patch-name.replace.txt` with replacement
-3. Add to patches array: `{ name: 'Description', file: 'patch-name' }`
-
-**Important**: Find text must match EXACTLY, including whitespace and newlines.
-
-### Escaped Backticks
-The CLI bundle escapes backticks as `\`` (backslash + backtick). Copy strings exactly as they appear in the bundle, including escapes like `\`command\``.
-
-### Iterate and Test
-1. Add ONE patch
-2. Run `node patch-cli.js`
-3. Check "Patches applied: X/Y" output
-4. Run extraction to verify
-5. Commit
-
-If patch shows `[SKIP]`, the find string doesn't match. Debug with `JSON.stringify()` to compare byte-by-byte.
-
-## How Extraction Works
-
-Claude Code is installed at `~/.claude/local/node_modules/@anthropic-ai/claude-code/cli.js` as a ~10MB minified JavaScript bundle.
-
-The system prompt is:
-- Built dynamically from template literals
-- Split across multiple sections with JavaScript conditionals
-- Uses minified variable names (e.g., `E9` for "Bash", `R8` for "Task")
-
-The extraction script:
-1. Finds each major section by its header (e.g., "# Tone and style")
-2. Handles conditional template patterns like `${W.has(X)?`...`:""}`
-3. Replaces minified variable names with readable ones
-
 ## Variable Mappings (v2.0.56)
 
 These change with each minified build. When updating, search the CLI bundle for readable strings (e.g., `"Bash"`) to find new variable names.
@@ -161,70 +84,32 @@ These change with each minified build. When updating, search the CLI bundle for 
 
 ### Additional Variables Found in Patches
 
-These variables appear in patch files but aren't in the extraction script. Useful reference when updating for new versions:
-
-| Minified | Likely Meaning | Found In |
-|----------|----------------|----------|
+| Minified | Meaning | Found In |
+|----------|---------|----------|
 | J | Security instructions | duplicate-security-warning |
 | NK9 | Security content (duplicate) | duplicate-security-warning |
 | OS3 | Allowed tools function | allowed-tools |
 | dXA, OJ, o5, Cd1 | Allowed tools helpers | allowed-tools |
 | Q | Agent types list | task-tool, git-commit, pr-creation |
 
-Note: `Q` (agent types) is handled specially by `extractAgentTypes()` in the extraction script.
+## Adding New Patches
 
-## Remaining Slimming Opportunities
+### Small patches (inline in patch-cli.js):
+```javascript
+{
+  name: 'Description of patch',
+  find: `exact string to find`,
+  replace: `replacement string`
+}
+```
 
-The system prompt is now essentially as slim as practical. The hooks paragraph (~300 chars) could be trimmed but gains are minimal.
+### Large patches (file-based):
+1. Create `patches/patch-name.find.txt` with exact text to find
+2. Create `patches/patch-name.replace.txt` with replacement
+3. Add to patches array: `{ name: 'Description', file: 'patch-name' }`
 
-## Updating for New CLI Versions
+**Important**: Find text must match EXACTLY, including whitespace and newlines.
 
-When Claude Code updates, patches may break due to changed minified variable names or modified content.
+## Upgrading to New Versions
 
-### Steps to Update
-
-1. **Backup the new version**:
-   ```bash
-   ./backup-cli.sh
-   ```
-
-2. **If hash mismatch**, compute the new hash:
-   ```bash
-   shasum -a 256 ~/.claude/local/node_modules/@anthropic-ai/claude-code/cli.js
-   ```
-
-3. **Update `patch-cli.js`**:
-   - Set `EXPECTED_VERSION` to new version (find with `grep "Version:" cli.js`)
-   - Set `EXPECTED_HASH` to the SHA256 from step 2
-
-4. **Run patches and check for failures**:
-   ```bash
-   node patch-cli.js
-   ```
-   Patches showing `[SKIP]` need their find strings updated.
-
-5. **Fix skipped patches**: The minified bundle changes each build, so:
-   - Search the CLI bundle for the readable text (e.g., "# Tone and style")
-   - Copy the surrounding context into the patch `.find.txt` file
-   - The replacement `.replace.txt` usually stays the same
-
-6. **Verify with extraction**:
-   ```bash
-   node extract-system-prompt.js /tmp/patched.md
-   ```
-
-### Updating Variable Mappings
-
-If `extract-system-prompt.js` outputs `[DYNAMIC]` markers, the variable names changed:
-1. Search the bundle for readable strings like `="Bash"` or `="Read"`
-2. Update the `VAR_MAP` object and `replaceVariables()` function
-
-## What's NOT Captured
-
-Dynamic content injected at runtime (not in static template):
-- Environment info (working directory, platform, date)
-- Git status snapshot
-- Model info ("You are powered by...")
-- CLAUDE.md file contents
-- MCP server instructions
-- Allowed tools list (note: patch #19 removes this from the prompt entirely)
+See [UPGRADING.md](../UPGRADING.md) for detailed migration steps.
