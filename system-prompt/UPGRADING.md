@@ -128,16 +128,20 @@ Use bisect mode to find which patch breaks the CLI:
 # Apply only first N patches
 node patch-cli.js --max=10
 
-# Test if claude works (use tmux to avoid interrupting current session)
-tmux new-session -d -s test
-tmux send-keys -t test 'claude -p "test"' Enter
-sleep 5
-tmux capture-pane -t test -p
+# Test with tmux (claude -p can hang when run directly)
+tmux new-session -d -s test 'claude -p "Say hello" 2>&1 > /tmp/claude-test.txt'
+sleep 12
+cat /tmp/claude-test.txt
 
 # Binary search: if works, try more; if crashes, try fewer
 ```
 
-Common crash: `TypeError: Cannot read properties of undefined (reading 'body')` usually means a variable reference in a replace file points to a non-existent function.
+**Symptoms of broken patches:**
+- "Execution error" with no other output = variable reference in replace.txt points to non-existent function
+- `TypeError: Cannot read properties of undefined` = same cause
+- Claude hangs/interrupts immediately = similar issue
+
+**Root cause is almost always:** A `*.replace.txt` file contains old variable names like `${i8.name}` that need to be updated to match the new version (e.g., `${m8.name}`).
 
 ## 7. Build new patches
 

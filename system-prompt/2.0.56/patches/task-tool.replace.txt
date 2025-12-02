@@ -3,7 +3,7 @@ Launch agents for complex, multi-step tasks. Specify subagent_type parameter.
 Available agent types:
 ${Q}
 
-When NOT to use: For specific file reads use ${i8.name}/${JO.name}; for specific class search use ${JO.name}.
+When NOT to use: For specific file reads use ${m8.name}/${WO.name}; for specific class search use ${WO.name}.
 
 Usage:
 - Launch multiple agents in parallel with multiple tool uses in one message

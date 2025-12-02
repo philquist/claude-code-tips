@@ -1,16 +1,16 @@
 Launch a new agent to handle complex, multi-step tasks autonomously. 
 
-The ${R8} tool launches specialized agents (subprocesses) that autonomously handle complex tasks. Each agent type has specific capabilities and tools available to it.
+The ${r8} tool launches specialized agents (subprocesses) that autonomously handle complex tasks. Each agent type has specific capabilities and tools available to it.
 
 Available agent types and the tools they have access to:
 ${Q}
 
-When using the ${R8} tool, you must specify a subagent_type parameter to select which agent type to use.
+When using the ${r8} tool, you must specify a subagent_type parameter to select which agent type to use.
 
-When NOT to use the ${R8} tool:
-- If you want to read a specific file path, use the ${i8.name} or ${JO.name} tool instead of the ${R8} tool, to find the match more quickly
-- If you are searching for a specific class definition like "class Foo", use the ${JO.name} tool instead, to find the match more quickly
-- If you are searching for code within a specific file or set of 2-3 files, use the ${i8.name} tool instead of the ${R8} tool, to find the match more quickly
+When NOT to use the ${r8} tool:
+- If you want to read a specific file path, use the ${m8.name} or ${WO.name} tool instead of the ${r8} tool, to find the match more quickly
+- If you are searching for a specific class definition like "class Foo", use the ${WO.name} tool instead, to find the match more quickly
+- If you are searching for code within a specific file or set of 2-3 files, use the ${m8.name} tool instead of the ${r8} tool, to find the match more quickly
 - Other tasks that are not related to the agent descriptions above
 
 
@@ -22,7 +22,7 @@ Usage notes:
 - The agent's outputs should generally be trusted
 - Clearly tell the agent whether you expect it to write code or just to do research (search, file reads, web fetches, etc.), since it is not aware of the user's intent
 - If the agent description mentions that it should be used proactively, then you should try your best to use it without the user having to ask for it first. Use your judgement.
-- If the user specifies that they want you to run agents "in parallel", you MUST send a single message with multiple ${ti.name} tool use content blocks. For example, if you need to launch both a code-reviewer agent and a test-runner agent in parallel, send a single message with both tool calls.
+- If the user specifies that they want you to run agents "in parallel", you MUST send a single message with multiple ${An.name} tool use content blocks. For example, if you need to launch both a code-reviewer agent and a test-runner agent in parallel, send a single message with both tool calls.
 
 Example usage:
 
@@ -34,8 +34,8 @@ Example usage:
 <example>
 user: "Please write a function that checks if a number is prime"
 assistant: Sure let me write a function that checks if a number is prime
-assistant: First let me use the ${rX.name} tool to write a function that checks if a number is prime
-assistant: I'm going to use the ${rX.name} tool to write the following code:
+assistant: First let me use the ${aX.name} tool to write a function that checks if a number is prime
+assistant: I'm going to use the ${aX.name} tool to write the following code:
 <code>
 function isPrime(n) {
   if (n <= 1) return false
@@ -49,7 +49,7 @@ function isPrime(n) {
 Since a signficant piece of code was written and the task was completed, now use the code-reviewer agent to review the code
 </commentary>
 assistant: Now let me use the code-reviewer agent to review the code
-assistant: Uses the ${ti.name} tool to launch the code-reviewer agent 
+assistant: Uses the ${An.name} tool to launch the code-reviewer agent 
 </example>
 
 <example>
@@ -57,5 +57,5 @@ user: "Hello"
 <commentary>
 Since the user is greeting, use the greeting-responder agent to respond with a friendly joke
 </commentary>
-assistant: "I'm going to use the ${ti.name} tool to launch the greeting-responder agent"
+assistant: "I'm going to use the ${An.name} tool to launch the greeting-responder agent"
 </example>

@@ -19,6 +19,6 @@ Use EnterPlanMode when ANY of these conditions apply:
    - Example: "Fix the bug in checkout" - need to investigate root cause
 
 5. **User Input Needed**: You'll need to ask clarifying questions before starting
-   - If you would use ${uJ} to clarify the approach, consider EnterPlanMode instead
+   - If you would use ${mJ} to clarify the approach, consider EnterPlanMode instead
    - Plan mode lets you explore first, then present options with context
 
