@@ -206,7 +206,7 @@ In this example:
 4. **Fourth tab** - Working on an engineering project
 5. **Fifth tab (current)** - Writing this very tip
 
-## Tip 14: Slim down the system prompt (experimental)
+## Tip 13: Slim down the system prompt (experimental)
 
 Claude Code's system prompt and tool definitions take up about 18k tokens (~9% of your 200k context) before you even start working. I created a patch system that reduces this to about 11k tokens - saving around 7,000 tokens (39% of the static overhead).
 
@@ -237,7 +237,7 @@ Check out the [system-prompt folder](system-prompt/2.0.56/) for the patch script
 
 **Important**: If you want to keep your patched system prompt, disable auto-updates by adding `export DISABLE_AUTOUPDATER=1` to your shell config (e.g., `~/.zshrc`). Otherwise Claude Code will auto-update and overwrite your patches. You can manually update later with `npm update -g @anthropic-ai/claude-code` when you're ready to re-apply patches to a new version.
 
-## Tip 13: Git worktrees for parallel branch work
+## Tip 14: Git worktrees for parallel branch work
 
 If you're working on multiple files or multiple branches and you don't want them to get conflicted, Git worktrees are a great way to work on them at the same time. You can just ask Claude Code to create a git worktree and start working on it there - you don't have to worry about the specific syntax.
 
