@@ -75,13 +75,38 @@ Update `EXPECTED_VERSION`, `EXPECTED_HASH` (run `shasum -a 256` on cli.js), and 
 
 The replace files contain variable references like `${r8}` that must match the new version. Old variable names cause runtime crashes or corrupted prompts.
 
-```bash
-# Find patches with old variable names
-grep -l '\${OLD_VAR}' patches/*.txt
+### Finding all variable mappings
 
-# Bulk update (example: E9 -> C9)
-sed -i '' 's/\${E9}/\${C9}/g' patches/*.txt
+Use Claude Code inside a container to help find mappings:
+
+```bash
+docker exec peaceful_lovelace claude --dangerously-skip-permissions -p \
+  'Search the cli.js.backup for tool variable assignments like X="Bash".
+   List all tool variable names: Bash, Read, Write, Edit, Glob, Grep, Task,
+   TodoWrite, WebFetch, WebSearch, AskUserQuestion, BashOutput, KillShell.'
 ```
+
+Common variable categories that change:
+- **Tool names:** `D9→U9` (Bash), `uY→cY` (Grep), `bX→fX` (Write)
+- **Object properties:** `tI.name→BY.name`, `In.name→Fn.name`, `d8.name→m8.name`
+- **Function names:** `KoA→woA`, `LGA→PGA`, `Ke→ze`, `oM6→LO6`
+- **Full function renames:** `vk3→Yy3`, `QFA→ZFA`, `RJ→vZ`
+- **Agent types:** `Sq.agentType→kq.agentType`
+- **Constants:** `Uf1→jf1`, `BH9→TH9`
+
+### Bulk update all patches
+
+```bash
+# Update BOTH find.txt AND replace.txt files!
+cd patches && sed -i '' \
+  -e 's/\${D9}/\${U9}/g' \
+  -e 's/\${uY}/\${cY}/g' \
+  -e 's/\${bX}/\${fX}/g' \
+  -e 's/\${tI\.name}/\${BY.name}/g' \
+  *.find.txt *.replace.txt
+```
+
+**Common mistake:** Updating only `.find.txt` files. The `.replace.txt` files contain the SAME variables and must also be updated or Claude will crash with "Execution error".
 
 ## 7. Build new patches
 
@@ -145,13 +170,35 @@ sleep 12 && cat /tmp/claude-test.txt
 
 Some errors don't crash - they corrupt the prompt silently. Test by asking Claude:
 
+```bash
+claude --dangerously-skip-permissions -p \
+  'Look at your own system prompt carefully. Do you notice anything weird,
+   broken, incomplete, or inconsistent? Any instructions that seem truncated,
+   duplicate, or don'\''t make sense? Report any issues you find.'
 ```
-In the prompts that you see so far, is there anything inconsistent or strange?
-```
+
+**Note:** Some issues are pre-existing bugs in Claude Code itself, not caused by patches. For example, v2.0.58 has an empty bullet point in the "Doing tasks" section - this exists in the UNPATCHED version too. Always compare against the unpatched version to distinguish patch bugs from Claude Code bugs.
 
 **Signs of failure:**
 - `[object Object]` where a tool name should be
 - Minified JS like `function(Q){if(this.ended)return...` leaking into text
+- API error: "text content blocks must contain non-whitespace text"
+
+## Empty replacements break /context
+
+When removing a section entirely, you **cannot** use an empty `.replace.txt` file. The API requires non-whitespace content in text blocks.
+
+**Wrong:** Empty `code-references.replace.txt` causes `/context` to fail with:
+```
+Error: 400 "text content blocks must contain non-whitespace text"
+```
+
+**Correct:** Use a minimal placeholder like `# .` in `code-references.replace.txt`:
+```
+# .
+```
+
+This appears as a harmless orphan section header but keeps the API happy.
 - `subagent_type=undefined`
 
 **Causes:**
@@ -228,3 +275,26 @@ docker exec claude-test claude -p "Say hello"
 ```
 
 This isolates testing from your main installation. If something breaks, just restart the container.
+
+## Using container Claude to investigate patches
+
+Claude Code itself can help find variable mappings and compare patches:
+
+```bash
+# Ask Claude to find exact text differences
+docker exec container claude --dangerously-skip-permissions -p \
+  'Read patches/bash-tool.find.txt and search for this exact text in
+   /path/to/cli.js.backup. Tell me where it differs.'
+
+# Ask Claude to find variable mappings
+docker exec container claude --dangerously-skip-permissions -p \
+  'Search cli.js.backup for all occurrences of X="ToolName" patterns.
+   Create a table of variable->tool mappings.'
+
+# Ask Claude to update patches automatically
+docker exec container claude --dangerously-skip-permissions -p \
+  'Update all .find.txt files in patches/ using sed with these mappings:
+   D9->U9, uY->cY, bX->fX. Run the sed command.'
+```
+
+This is especially useful when multiple variables change between versions - Claude can analyze the cli.js and find all the mappings at once.
