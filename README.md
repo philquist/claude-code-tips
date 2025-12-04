@@ -254,7 +254,7 @@ When waiting on long-running jobs like Docker builds or GitHub CI, you can ask C
 
 This way the agent can continuously check the status and let you know once it's done.
 
-(For GitHub CI specifically, `gh run watch` is another option. But this is a general technique that works well even when you don't have a dedicated wait command handy.)
+(For GitHub CI specifically, `gh run watch` exists but outputs many lines continuously, which wastes tokens. Manual exponential backoff with `gh run view <run-id> | grep <job-name>` is actually more token-efficient. This is also a general technique that works well even when you don't have a dedicated wait command handy.)
 
 For example, if you have a Docker build running in the background:
 
