@@ -113,17 +113,26 @@ output+=" | ${ctx}"
 
 echo "$output"
 
-# Get user's last message (text only, not tool results)
+# Get user's last message (text only, not tool results, skip unhelpful messages)
 if [[ -n "$transcript_path" && -f "$transcript_path" ]]; then
     max_len=$((${#output} - 4))  # subtract for "💬 " prefix
     last_user_msg=$(jq -rs '
+        # Messages to skip (not useful as context)
+        def is_unhelpful:
+            startswith("[Request interrupted") or
+            startswith("[Request cancelled") or
+            . == "";
+
         [.[] | select(.type == "user") |
          select(.message.content | type == "string" or
                 (type == "array" and any(.[]; .type == "text")))] |
-        last | .message.content |
-        if type == "string" then .
-        else [.[] | select(.type == "text") | .text] | join(" ") end |
-        gsub("\n"; " ") | gsub("  +"; " ")
+        reverse |
+        map(.message.content |
+            if type == "string" then .
+            else [.[] | select(.type == "text") | .text] | join(" ") end |
+            gsub("\n"; " ") | gsub("  +"; " ")) |
+        map(select(is_unhelpful | not)) |
+        first // ""
     ' < "$transcript_path" 2>/dev/null)
 
     if [[ -n "$last_user_msg" ]]; then
