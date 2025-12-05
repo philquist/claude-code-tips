@@ -378,6 +378,8 @@ Error: 400 "text content blocks must contain non-whitespace text"
 
 This appears as a harmless orphan section header but keeps the API happy.
 
+**Why remove code-references?** The original instructs Claude to cite code with `file_path:line_number` format. Removing it saves ~360 chars but loses the citation behavior. This is an intentional tradeoff - if you prefer line number citations, delete the `code-references` patch files.
+
 ## Variable case sensitivity
 
 **Symptoms:** `[object Object]` in prompt, `subagent_type=undefined`
