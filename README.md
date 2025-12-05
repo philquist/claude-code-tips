@@ -1,4 +1,4 @@
-# 30 Claude Code Tips: From Basics to Advanced (Work in Progress - 22 tips so far)
+# 30 Claude Code Tips: From Basics to Advanced (Work in Progress - 23 tips so far)
 
 Tips for getting the most out of Claude Code - includes a custom status line script, system prompt patching, and using Gemini CLI as Claude Code's minion.
 
@@ -282,7 +282,11 @@ Markdown was already pretty good even before AI, but with Claude Code in particu
 
 A quick tip for this one: if you want to copy and paste markdown content into a platform that doesn't accept it easily, you can paste it into a fresh Notion file first, then copy from Notion into the other platform. Notion converts it to a format that other platforms can accept. If regular pasting doesn't work, try Command + Shift + V to paste without formatting.
 
-## Tip 18: Containers for long-running risky tasks
+## Tip 18: Use Notion to preserve links when pasting
+
+It turns out the reverse also works. If you have text with links from other places, let's say from Slack, you can copy it. If you paste it directly into Claude Code, it doesn't show the links. But if you put it in a Notion document first, then copy from there, you get it in markdown, which of course Claude Code can read.
+
+## Tip 19: Containers for long-running risky tasks
 
 Regular sessions are more for methodical work where you control the permissions you give and review output more carefully. Containerized environments are great for `--dangerously-skip-permissions` sessions where you don't have to give permission for each little thing. You can just let it run on its own for a while.
 
@@ -309,7 +313,7 @@ This gives you a fully autonomous "worker" Claude Code that can run experimental
 
 Beyond just Claude Code, you can run different AI CLIs in containers - Codex, Gemini CLI, or others. I tried OpenAI Codex for code review, and it works well. The point isn't that you can't run these CLIs directly on your host machine - you obviously can. The value is that Claude Code's UI/UX is smooth enough that you can just talk to it and let it handle the orchestration: spinning up different models, sending data between containers and your host. Instead of manually switching between terminals and copy-pasting, Claude Code becomes the central interface that coordinates everything.
 
-## Tip 19: The best way to get better at using Claude Code is by using it
+## Tip 20: The best way to get better at using Claude Code is by using it
 
 Recently I saw a world-class rock climber being interviewed by another rock climber. She was asked, "How do you get better at rock climbing?" She simply said, "By rock climbing."
 
@@ -317,7 +321,7 @@ That's how I feel about this too. Of course, there are supplementary things you 
 
 I like to think of it like a billion token rule instead of the 10,000 hour rule. If you want to get better at AI and truly get a good intuition about how it works, the best way is to consume a lot of tokens. And nowadays it's possible. I found that especially with Opus 4.5, it's powerful enough but affordable enough that you can run multiple sessions at the same time. You don't have to worry as much about token usage, which frees you up a lot.
 
-## Tip 20: Clone conversations to branch off (experimental)
+## Tip 21: Clone conversations to branch off (experimental)
 
 Sometimes you want to try a different approach from a specific point in a conversation without losing your original thread. The [clone-conversation script](scripts/clone-conversation.sh) lets you duplicate a conversation with new UUIDs so you can branch off.
 
@@ -333,7 +337,7 @@ Then just type `/clone` in any conversation and Claude will handle finding the s
 
 This is experimental. I'm still testing this.
 
-## Tip 21: Use realpath to get absolute paths
+## Tip 22: Use realpath to get absolute paths
 
 When you need to tell Claude Code about files in a different folder, use `realpath` to get the full absolute path:
 
@@ -341,7 +345,7 @@ When you need to tell Claude Code about files in a different folder, use `realpa
 realpath some/relative/path
 ```
 
-## Tip 22: Understanding CLAUDE.md vs Skills vs Slash Commands vs Plugins
+## Tip 23: Understanding CLAUDE.md vs Skills vs Slash Commands vs Plugins
 
 These are somewhat similar features and I initially found them pretty confusing. I've been unpacking them and trying my best to wrap my head around them, so I wanted to share what I learned.
 
