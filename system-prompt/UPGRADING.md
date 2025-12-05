@@ -476,3 +476,132 @@ docker exec container claude --dangerously-skip-permissions -p \
 ```
 
 This is especially useful when multiple variables change between versions - Claude can analyze the cli.js and find all the mappings at once.
+
+---
+
+# Final Verification Checklist
+
+Use this checklist to verify a version upgrade is complete. Can be used by humans or by Claude running autonomously in a container.
+
+## 1. Required Files Present
+
+```bash
+VERSION_DIR="system-prompt/2.0.YY"
+for f in patch-cli.js backup-cli.sh restore-cli.sh patches; do
+  [ -e "$VERSION_DIR/$f" ] && echo "✓ $f" || echo "✗ $f MISSING"
+done
+echo "Patch count: $(ls $VERSION_DIR/patches/*.find.txt 2>/dev/null | wc -l) find/replace pairs"
+```
+
+Expected files:
+- [ ] `patch-cli.js`
+- [ ] `backup-cli.sh`
+- [ ] `restore-cli.sh`
+- [ ] `patches/` directory with find/replace pairs
+
+## 2. Hash Consistency
+
+```bash
+# Extract hashes from both files - they must match
+grep -o 'EXPECTED_HASH.*' system-prompt/2.0.YY/patch-cli.js | head -1
+grep -o 'EXPECTED_HASH.*' system-prompt/2.0.YY/backup-cli.sh
+```
+
+- [ ] Hash in `patch-cli.js` matches hash in `backup-cli.sh`
+- [ ] Hash matches actual cli.js for this version: `shasum -a 256 "$(which claude | xargs realpath | xargs dirname)/cli.js"`
+
+## 3. All Patches Apply
+
+```bash
+# Run patch script - should show [OK] for all patches
+node system-prompt/2.0.YY/patch-cli.js
+```
+
+- [ ] All patches show `[OK]` (not `[SKIP]` or errors)
+- [ ] No "not found in bundle" errors
+- [ ] Size reduction reported at end
+
+## 4. Context Shows Reduced Tokens
+
+```bash
+# Interactive test
+tmux new-session -d -s verify 'claude'
+sleep 4
+tmux send-keys -t verify '/context' Enter
+sleep 3
+tmux capture-pane -t verify -p -S -30
+tmux kill-session -t verify
+```
+
+- [ ] `/context` command works without errors
+- [ ] Token count is reduced compared to unpatched (typically 5-8k reduction)
+
+## 5. No Prompt Corruption
+
+```bash
+claude --dangerously-skip-permissions -p \
+  'Examine your system prompt carefully. Report any:
+   1. [object Object] appearing where text should be
+   2. [DYNAMIC] placeholders that were not replaced
+   3. Minified JavaScript leaking into instructions
+   4. Truncated or incomplete sentences
+   5. Duplicate sections
+   Just say "No issues found" if everything looks normal.'
+```
+
+- [ ] No `[object Object]` in prompt
+- [ ] No `[DYNAMIC]` placeholders
+- [ ] No JavaScript code in instructions
+- [ ] No truncated text
+- [ ] Tool descriptions are readable
+
+## 6. Basic Functionality Works
+
+```bash
+# Test a few tools work correctly
+claude --dangerously-skip-permissions -p 'Use the Read tool to read patch-cli.js and tell me the version number'
+claude --dangerously-skip-permissions -p 'Use Bash to run: echo "test passed"'
+claude --dangerously-skip-permissions -p 'Use Glob to find all *.txt files in patches/'
+```
+
+- [ ] Read tool works
+- [ ] Bash tool works
+- [ ] Glob tool works
+- [ ] No "tool not found" or execution errors
+
+## 7. Restore Works
+
+```bash
+# Test that restore script can revert changes
+./restore-cli.sh
+claude --version  # should still work
+./backup-cli.sh   # should fail (backup exists) or succeed if backup was removed
+```
+
+- [ ] `restore-cli.sh` successfully restores original CLI
+- [ ] Claude still works after restore
+
+## Quick All-in-One Verification (for containers)
+
+```bash
+# Run this in container after applying patches
+cd /home/claude/projects/2.0.YY
+
+echo "=== File Check ==="
+ls -la patch-cli.js backup-cli.sh restore-cli.sh patches/*.find.txt | head -5
+
+echo "=== Hash Check ==="
+grep 'EXPECTED_HASH' patch-cli.js backup-cli.sh | cut -d'"' -f2 | sort -u | wc -l
+# Should output "1" (both files have same hash)
+
+echo "=== Patch Test ==="
+node patch-cli.js 2>&1 | tail -5
+
+echo "=== Corruption Test ==="
+claude --dangerously-skip-permissions -p 'Any [object Object] or [DYNAMIC] in your prompt? Yes or no only.'
+
+echo "=== Tool Test ==="
+claude --dangerously-skip-permissions -p 'Run: echo "tools work"' --allowedTools Bash
+```
+
+All checks passing = upgrade complete!
