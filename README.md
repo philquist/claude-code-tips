@@ -103,13 +103,13 @@ There's a `/compact` command in Claude Code that summarizes your conversation to
 
 The way I do this is to ask Claude to write a handoff document before starting fresh. Something like:
 
-> Put the rest of the plan in the system-prompt-extraction folder. Explain what you have tried, what worked, what didn't work, so that the next agent with fresh context is able to just load that file and nothing else to get started on this task and finish it up.
+> Put the rest of the plan in the system-prompt-extraction folder as HANDOFF.md. Explain what you have tried, what worked, what didn't work, so that the next agent with fresh context is able to just load that file and nothing else to get started on this task and finish it up.
 
 Claude will create a file summarizing the current state of work:
 
 ```
-⏺ Write(experiments/system-prompt-extraction/NEXT-STEPS.md)
-  ⎿  Wrote 129 lines to experiments/system-prompt-extraction/NEXT-STEPS.md
+⏺ Write(experiments/system-prompt-extraction/HANDOFF.md)
+  ⎿  Wrote 129 lines to experiments/system-prompt-extraction/HANDOFF.md
      # System Prompt Slimming - Handoff Document
      ## Goal
      Reduce Claude Code's system prompt by ~45% (currently at 11%, need ~34% more).
@@ -127,7 +127,7 @@ After Claude writes it, review it quickly. If something's missing, ask for edits
 Then start a fresh conversation. For the fresh agent, you can just give the path of the file and nothing else like this, and it should work just fine:
 
 ```
-> experiments/system-prompt-extraction/NEXT-STEPS.md
+> experiments/system-prompt-extraction/HANDOFF.md
 ```
 
 In subsequent conversations, you can ask the agent to update the document for the next agent.
