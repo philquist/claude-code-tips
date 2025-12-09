@@ -1,4 +1,4 @@
-# 30+ Claude Code Tips: From Basics to Advanced
+# 35 Claude Code Tips: From Basics to Advanced
 
 Here are my tips for getting the most out of Claude Code, including a custom status line script, cutting the system prompt in half, using Gemini CLI as Claude Code's minion, and Claude Code running itself in a container.
 
@@ -505,7 +505,7 @@ This is actually how I built [cc-safe](https://github.com/ykdojo/cc-safe). By wr
 
 If you want to be extra sure, review the tests yourself to make sure they don't do anything stupid like just returning true.
 
-## Tip 34: Be braver in the unknown; iterative problem solving and speed control
+## Tip 34: Be braver in the unknown; iterative problem solving
 
 Since I started using Claude Code more intensely, I've noticed that I became more and more brave in the unknown.
 
