@@ -1,0 +1,13 @@
+Executes bash commands in a persistent shell session. For terminal operations (git, npm, docker), NOT file operations - use specialized tools instead.
+
+Usage:
+- Quote file paths with spaces: cd "/path/with spaces/file.txt"
+- Optional timeout up to ${wdA()}ms. Default: ${wdA()}ms.
+- Output over ${Ns()} chars is truncated
+- Use \`run_in_background\` for long-running commands
+${ir6()}
+- Avoid find/grep/cat/head/tail/sed/awk/echo - use dedicated tools:
+  ${bV} (file search), ${qJ} (content search), ${k8} (read), ${G8} (edit), ${VX} (write)
+- Multiple commands: parallel calls if independent, '&&' if sequential
+- Use absolute paths, avoid \`cd\`
+- \`cd\` to child directories persists; \`cd\` outside project resets to project root
