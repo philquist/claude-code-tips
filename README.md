@@ -44,8 +44,9 @@ Here are my tips for getting the most out of Claude Code, including a custom sta
 - [Tip 36: The era of personalized software is here](#tip-36-the-era-of-personalized-software-is-here)
 - [Tip 37: Navigating and editing your input box](#tip-37-navigating-and-editing-your-input-box)
 - [Tip 38: Spend some time planning, but also prototype quickly](#tip-38-spend-some-time-planning-but-also-prototype-quickly)
-- [Tip 39: Share your knowledge and contribute where you can](#tip-39-share-your-knowledge-and-contribute-where-you-can)
-- [Tip 40: Keep learning!](#tip-40-keep-learning)
+- [Tip 39: Simplify overcomplicated code](#tip-39-simplify-overcomplicated-code)
+- [Tip 40: Share your knowledge and contribute where you can](#tip-40-share-your-knowledge-and-contribute-where-you-can)
+- [Tip 41: Keep learning!](#tip-41-keep-learning)
 
 <!-- /TOC -->
 
@@ -640,7 +641,15 @@ For example, I was recently experimenting with creating a diff viewer. I first t
 
 You can use plan mode for this by pressing Shift+Tab to switch to it. Or you can just ask Claude Code to make a plan before writing any code.
 
-## Tip 39: Share your knowledge and contribute where you can
+## Tip 39: Simplify overcomplicated code
+
+I've found that Claude Code sometimes overcomplicates things and writes too much code. It makes changes you didn't ask for. It just seems to have a bias for writing more code. The code might work correctly if you've followed the other tips in this guide, but it's going to be hard to maintain and hard to check. It can be kind of a nightmare if you don't review it enough.
+
+So sometimes you want to check the code and ask it to simplify things. You could fix things yourself, but you could also just ask it to simplify. You can ask questions like "why did you make this particular change?" or "why did you add this line?"
+
+Some people say if you write code only through AI, you'll never understand it. But that's only true if you don't ask enough questions. If you make sure you understand every single thing, you can actually understand code faster than otherwise because you can ask AI about it. Especially when you're working on a large project.
+
+## Tip 40: Share your knowledge and contribute where you can
 
 This tip is a bit different from the others. I found that by learning as much as you can, you're able to share your knowledge with people around you. Maybe through posts like these, maybe even books, courses, videos. I also recently had an [internal session for my colleagues at Daft](https://www.daft.ai/blog/how-we-use-ai-coding-agents). It's been very rewarding.
 
@@ -655,7 +664,7 @@ When it comes to contributing, I've been sending issues to the Claude Code repo.
 
 It's kind of amazing how fast the team can react to feature requests and bug reports. But it makes sense because they're using Claude Code to build Claude Code itself.
 
-## Tip 40: Keep learning!
+## Tip 41: Keep learning!
 
 There are several effective ways to keep learning about Claude Code:
 
