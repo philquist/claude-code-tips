@@ -14,7 +14,7 @@
 | Repo | Stars | Type | Status | Link |
 |------|-------|------|--------|------|
 | hesreallyhim/awesome-claude-code | 18k | Issue #424 | Open | https://github.com/hesreallyhim/awesome-claude-code/issues/424 |
-| travisvn/awesome-claude-skills | 3.7k | Draft PR #32 | Open | https://github.com/travisvn/awesome-claude-skills/pull/32 |
+| travisvn/awesome-claude-skills | 3.7k | PR #32 | Open | https://github.com/travisvn/awesome-claude-skills/pull/32 |
 
 ## To Submit
 
