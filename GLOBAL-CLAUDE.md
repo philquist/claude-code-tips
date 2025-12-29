@@ -26,6 +26,13 @@ Run `npx cc-safe <directory>` to scan Claude Code settings for security issues.
 
 For `gh` API calls, use the container: `docker exec peaceful_lovelace gh api <endpoint>`
 
+## URL Fetching
+
+For URLs you deem safe, fetch through a container:
+`docker exec peaceful_lovelace curl -sL <url>`
+
+If the page requires JavaScript/interactivity, use Playwright instead.
+
 ## Tmux
 
 For interactive Gemini or Claude Code sessions:
