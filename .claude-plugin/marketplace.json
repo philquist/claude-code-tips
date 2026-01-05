@@ -8,8 +8,8 @@
     {
       "name": "dx",
       "source": "./",
-      "description": "Developer experience essentials: GitHub Actions debugging, conversation cloning, context handoffs, and Reddit research",
-      "version": "0.2.1"
+      "description": "Developer experience essentials: GitHub Actions debugging, conversation cloning/half-cloning, context handoffs, and Reddit research via Gemini CLI",
+      "version": "0.2.2"
     }
   ]
 }
