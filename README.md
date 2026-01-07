@@ -430,8 +430,6 @@ Claude Code's system prompt and tool definitions take up about 19k tokens (~10% 
 | System tools | 15.6k | 7.4k | 8,200 tokens |
 | **Total** | **~19k** | **~9k** | **~10k tokens (~50%)** |
 
-**Note:** In versions before 2.1.1, there was also an "allowed tools list" that grew as you approved bash commands. This feature was removed in 2.1.1.
-
 Here's what `/context` looks like before and after patching:
 
 **Unpatched (~20k, 10%)**
