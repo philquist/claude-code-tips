@@ -171,6 +171,7 @@ process_line() {
     local new_session="$2"
     local is_first_message="$3"
     local is_first_user="$4"
+    local clone_tag="$5"
     local result="$line"
 
     # Replace sessionId
@@ -211,16 +212,16 @@ process_line() {
         result=$(replace_uuid_in_line "$result" "messageId" "$old_msgid" "$new_msgid")
     fi
 
-    # Tag first user message with [HALF-CLONE]
+    # Tag first user message with clone tag
     if [ "$is_first_user" = "true" ]; then
         if echo "$result" | grep -q '"type":"user"' 2>/dev/null; then
-            # Handle string content: "content":"text" -> "content":"[HALF-CLONE] text"
+            # Handle string content: "content":"text" -> "content":"[HALF-CLONE ...] text"
             if echo "$result" | grep -qE '"content":"[^"[]' 2>/dev/null; then
-                result=$(echo "$result" | sed 's/"content":"/"content":"[HALF-CLONE] /')
+                result=$(echo "$result" | sed "s/\"content\":\"/\"content\":\"${clone_tag} /")
             fi
-            # Handle array content: "text":"..." -> "text":"[HALF-CLONE] ..."
+            # Handle array content: "text":"..." -> "text":"[HALF-CLONE ...] ..."
             if echo "$result" | grep -qE '"content":\[.*"text":"' 2>/dev/null; then
-                result=$(echo "$result" | sed 's/"text":"/"text":"[HALF-CLONE] /')
+                result=$(echo "$result" | sed "s/\"text\":\"/\"text\":\"${clone_tag} /")
             fi
         fi
     fi
@@ -234,6 +235,11 @@ process_line() {
 half_clone_conversation() {
     local source_session="$1"
     local project_path="$2"
+
+    # Generate timestamp for clone tag (e.g., "Jan 7 14:30")
+    local clone_timestamp
+    clone_timestamp=$(date "+%b %-d %H:%M")
+    local clone_tag="[HALF-CLONE ${clone_timestamp}]"
 
     # Find source file
     local source_file
@@ -340,7 +346,7 @@ half_clone_conversation() {
             first_user_found="true"
         fi
 
-        process_line "$line" "$new_session" "$is_first_message" "$is_first_user"
+        process_line "$line" "$new_session" "$is_first_message" "$is_first_user" "$clone_tag"
         ((output_line_count++)) || true
     done < "$source_file" > "$target_file"
 
@@ -364,7 +370,7 @@ half_clone_conversation() {
             head -c 200 || echo "[Half-cloned conversation]")
     fi
 
-    display_text="[HALF-CLONE] ${display_text}"
+    display_text="${clone_tag} ${display_text}"
 
     # Timestamp (milliseconds)
     local timestamp
@@ -393,7 +399,7 @@ half_clone_conversation() {
     echo "To resume the half-cloned conversation, use:"
     echo "  claude -r"
     echo ""
-    echo "Then select the conversation marked with [HALF-CLONE]"
+    echo "Then select the conversation marked with ${clone_tag}"
 }
 
 # Main

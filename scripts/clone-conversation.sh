@@ -150,6 +150,7 @@ process_line() {
     local line="$1"
     local new_session="$2"
     local is_first_user="$3"
+    local clone_tag="$4"
     local result="$line"
 
     # Replace sessionId
@@ -186,16 +187,16 @@ process_line() {
         result=$(replace_uuid_in_line "$result" "messageId" "$old_msgid" "$new_msgid")
     fi
 
-    # Tag first user message with [CLONED]
+    # Tag first user message with clone tag
     if [ "$is_first_user" = "true" ]; then
         if echo "$result" | grep -q '"type":"user"' 2>/dev/null; then
-            # Handle string content: "content":"text" -> "content":"[CLONED] text"
+            # Handle string content: "content":"text" -> "content":"[CLONED ...] text"
             if echo "$result" | grep -qE '"content":"[^"[]' 2>/dev/null; then
-                result=$(echo "$result" | sed 's/"content":"/"content":"[CLONED] /')
+                result=$(echo "$result" | sed "s/\"content\":\"/\"content\":\"${clone_tag} /")
             fi
-            # Handle array content: "text":"..." -> "text":"[CLONED] ..."
+            # Handle array content: "text":"..." -> "text":"[CLONED ...] ..."
             if echo "$result" | grep -qE '"content":\[.*"text":"' 2>/dev/null; then
-                result=$(echo "$result" | sed 's/"text":"/"text":"[CLONED] /')
+                result=$(echo "$result" | sed "s/\"text\":\"/\"text\":\"${clone_tag} /")
             fi
         fi
     fi
@@ -206,6 +207,11 @@ process_line() {
 clone_conversation() {
     local source_session="$1"
     local project_path="$2"
+
+    # Generate timestamp for clone tag (e.g., "Jan 7 14:30")
+    local clone_timestamp
+    clone_timestamp=$(date "+%b %-d %H:%M")
+    local clone_tag="[CLONED ${clone_timestamp}]"
 
     # Find source file
     local source_file
@@ -260,7 +266,7 @@ clone_conversation() {
             first_user_found="true"
         fi
 
-        process_line "$line" "$new_session" "$is_first_user"
+        process_line "$line" "$new_session" "$is_first_user" "$clone_tag"
         ((line_count++)) || true
     done < "$source_file" > "$target_file"
 
@@ -284,7 +290,7 @@ clone_conversation() {
             head -c 200 || echo "[Cloned conversation]")
     fi
 
-    display_text="[CLONED] ${display_text}"
+    display_text="${clone_tag} ${display_text}"
 
     # Timestamp (milliseconds)
     local timestamp
@@ -319,7 +325,7 @@ clone_conversation() {
     echo "To resume the cloned conversation, use:"
     echo "  claude -r"
     echo ""
-    echo "Then select the conversation marked with [CLONED]"
+    echo "Then select the conversation marked with ${clone_tag}"
 }
 
 # Main

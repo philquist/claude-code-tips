@@ -223,9 +223,9 @@ test_parent_uuid_nullified() {
     fi
 }
 
-# Test 6: [HALF-CLONE] tag is present
+# Test 6: [HALF-CLONE <timestamp>] tag is present
 test_half_clone_tag() {
-    log_test "[HALF-CLONE] tag should be in first user message"
+    log_test "[HALF-CLONE <timestamp>] tag should be in first user message"
 
     local session_id
     session_id=$(create_test_conversation 6)
@@ -236,10 +236,11 @@ test_half_clone_tag() {
     new_session=$(get_new_session_from_output "$output")
     local new_file="${TEST_PROJECTS_DIR}/${TEST_PROJECT_DIRNAME}/${new_session}.jsonl"
 
-    if grep -q '\[HALF-CLONE\]' "$new_file"; then
-        log_pass "[HALF-CLONE] tag found"
+    # Match pattern like [HALF-CLONE Jan 7 14:30]
+    if grep -qE '\[HALF-CLONE [A-Z][a-z]+ [0-9]+ [0-9]+:[0-9]+\]' "$new_file"; then
+        log_pass "[HALF-CLONE <timestamp>] tag found"
     else
-        log_fail "[HALF-CLONE] tag not found"
+        log_fail "[HALF-CLONE <timestamp>] tag not found"
         cat "$new_file"
     fi
 }
@@ -283,10 +284,11 @@ test_history_entry() {
     history_after=$(wc -l < "${TEST_CLAUDE_DIR}/history.jsonl" | tr -d ' ')
 
     if [ "$history_after" -gt "$history_before" ]; then
-        if grep -q '\[HALF-CLONE\]' "${TEST_CLAUDE_DIR}/history.jsonl"; then
-            log_pass "History entry added with [HALF-CLONE] tag"
+        # Match pattern like [HALF-CLONE Jan 7 14:30]
+        if grep -qE '\[HALF-CLONE [A-Z][a-z]+ [0-9]+ [0-9]+:[0-9]+\]' "${TEST_CLAUDE_DIR}/history.jsonl"; then
+            log_pass "History entry added with [HALF-CLONE <timestamp>] tag"
         else
-            log_fail "History entry added but missing [HALF-CLONE] tag"
+            log_fail "History entry added but missing [HALF-CLONE <timestamp>] tag"
         fi
     else
         log_fail "No history entry added"

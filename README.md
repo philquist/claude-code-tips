@@ -539,7 +539,7 @@ I like to think of it like a billion token rule instead of the 10,000 hour rule.
 
 Sometimes you want to try a different approach from a specific point in a conversation without losing your original thread. The [clone-conversation script](scripts/clone-conversation.sh) lets you duplicate a conversation with new UUIDs so you can branch off.
 
-The first message is tagged with `[CLONED]`, which shows up both in the `claude -r` list and inside the conversation.
+The first message is tagged with `[CLONED <timestamp>]` (e.g., `[CLONED Jan 7 14:30]`), which shows up both in the `claude -r` list and inside the conversation.
 
 To set it up manually, symlink both files:
 ```bash
@@ -555,7 +555,7 @@ I've tested this extensively and the cloning works really well.
 
 ### Half-clone to reduce context
 
-When a conversation gets too long, the [half-clone-conversation script](scripts/half-clone-conversation.sh) keeps only the later half. This reduces token usage while preserving your recent work. The first message is tagged with `[HALF-CLONE]`.
+When a conversation gets too long, the [half-clone-conversation script](scripts/half-clone-conversation.sh) keeps only the later half. This reduces token usage while preserving your recent work. The first message is tagged with `[HALF-CLONE <timestamp>]` (e.g., `[HALF-CLONE Jan 7 14:30]`).
 
 To set it up manually, symlink both files:
 ```bash

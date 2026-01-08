@@ -7,4 +7,4 @@ Steps:
    - Uses version sort to prefer the latest version if multiple exist
 3. Run: `<script-path> <session-id> <project-path>`
    - Always pass the project path from the history entry, not the current working directory
-4. Tell the user they can access the half-cloned conversation with `claude -r` and look for the one marked `[HALF-CLONE]`
+4. Tell the user they can access the half-cloned conversation with `claude -r` and look for the one marked `[HALF-CLONE <timestamp>]` (e.g., `[HALF-CLONE Jan 7 14:30]`)
