@@ -8,6 +8,8 @@
 
 When I paste large content with no instructions, just summarize it.
 
+For a complex bash command, either run it as multiple individual commands, or put it in a bash script file and run it with `bash /tmp/<script>.sh`.
+
 # Safety
 
 **NEVER use `--dangerously-skip-permissions` on the host machine.**
