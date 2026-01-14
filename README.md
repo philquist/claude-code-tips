@@ -478,7 +478,7 @@ Enable lazy-loading so MCP tools are only loaded when needed:
 }
 ```
 
-Add this to `~/.claude/settings.json`. Claude will search for and load MCP tools on-demand rather than having them all present from the start.
+Add this to `~/.claude/settings.json`. Claude will search for and load MCP tools on-demand rather than having them all present from the start. As of version 2.1.7, this happens automatically when MCP tool descriptions exceed 10% of the context window.
 
 ## Tip 16: Git worktrees for parallel branch work
 
