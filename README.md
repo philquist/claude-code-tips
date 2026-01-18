@@ -571,6 +571,24 @@ Sometimes you want to try a different approach from a specific point in a conver
 - `/fork` - forks the current session from within a conversation
 - `--fork-session` - use with `--resume` or `--continue` (e.g., `claude -c --fork-session`)
 
+Since `--fork-session` has no short form, you can add this function to your `~/.zshrc` or `~/.bashrc` to use `--fs` as a shortcut:
+
+```bash
+claude() {
+  local args=()
+  for arg in "$@"; do
+    if [[ "$arg" == "--fs" ]]; then
+      args+=("--fork-session")
+    else
+      args+=("$arg")
+    fi
+  done
+  command claude "${args[@]}"
+}
+```
+
+This intercepts all `claude` commands, expands `--fs` to `--fork-session`, and passes everything else through unchanged. Works with aliases too (see [Tip 7](#tip-7-set-up-terminal-aliases-for-quick-access)): `c -c --fs`, `ch -c --fs`, etc.
+
 The clone script below predates these built-in options, but the half-clone script below that remains unique for reducing context.
 
 The first message is tagged with `[CLONED <timestamp>]` (e.g., `[CLONED Jan 7 14:30]`), which shows up both in the `claude -r` list and inside the conversation.
