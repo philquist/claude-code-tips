@@ -888,7 +888,7 @@ There are several effective ways to keep learning about Claude Code:
 
 **Learn from the community** - The [r/ClaudeAI](https://www.reddit.com/r/ClaudeAI/) subreddit is a great place to learn from other users and see what workflows people are using.
 
-**Follow Ado for daily tips** - Ado ([@adocomplete](https://x.com/adocomplete)) is a DevRel at Anthropic who's been posting daily Claude Code tips throughout December in his "Advent of Claude" series. Each day covers a different feature or workflow - things like named sessions, `/stats`, headless mode, vim mode, and more.
+**Follow Ado for daily tips** - Ado ([@adocomplete](https://x.com/adocomplete)) is a DevRel at Anthropic who posted daily Claude Code tips throughout December 2025 in his "Advent of Claude" series. While this particular series has already ended, he continues to share useful tips on X.
 
 - [Twitter/X: Advent of Claude posts](https://x.com/search?q=from%3Aadocomplete%20advent%20of%20claude&src=typed_query&f=live)
 - [LinkedIn: Advent of Claude posts](https://www.linkedin.com/search/results/content/?fromMember=%5B%22ACoAAAFdD3IBYHwKSh6FsyGqOh1SpbrZ9ZHTjnI%22%5D&keywords=advent%20of%20claude&origin=FACETED_SEARCH&sid=zDV&sortBy=%22date_posted%22)
