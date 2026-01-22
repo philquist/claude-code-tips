@@ -220,6 +220,7 @@ const patches = [
   // New patches
   { name: 'Slim ToolSearch description (~1.5KB → 400 chars)', file: 'toolsearch-description' },
   { name: 'Slim TaskUpdate description (~1.8KB → 150 chars)', file: 'taskupdate' },
+  { name: 'Slim TaskList description (~1.2KB → 90 chars)', file: 'tasklist' },
 ];
 
 // Helper: compute SHA256 hash
