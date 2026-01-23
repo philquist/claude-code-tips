@@ -10,7 +10,32 @@ const path = require('path');
 
 // Configuration
 const EXPECTED_VERSION = '2.1.17';
-const EXPECTED_HASH = 'f98412938f6ce048b6cbeed73859ba3e420408a82f8966c04a6406319302e6e5';
+const EXPECTED_HASHES = {
+  npm: 'f98412938f6ce048b6cbeed73859ba3e420408a82f8966c04a6406319302e6e5',
+  native: '40d386f55d8a977f009e4d9ba4576a1fc5171df0cca58678fcf866dd3b86358e',
+};
+
+// Unicode characters that native (Bun) builds escape differently
+// Using codepoints to avoid syntax issues with special quotes
+const UNICODE_ESCAPES = [
+  ['\u2014', '\\u2014'],  // em-dash —
+  ['\u2192', '\\u2192'],  // arrow →
+  ['\u2013', '\\u2013'],  // en-dash –
+  ['\u201c', '\\u201c'],  // left double quote "
+  ['\u201d', '\\u201d'],  // right double quote "
+  ['\u2018', '\\u2018'],  // left single quote '
+  ['\u2019', '\\u2019'],  // right single quote '
+  ['\u2026', '\\u2026'],  // ellipsis …
+];
+
+// Convert literal Unicode to escape sequences (for native binary compatibility)
+function toNativeEscapes(str) {
+  let result = str;
+  for (const [char, escape] of UNICODE_ESCAPES) {
+    result = result.split(char).join(escape);
+  }
+  return result;
+}
 
 // Auto-detect CLI path by following the claude binary
 const { execSync } = require('child_process');
@@ -242,15 +267,17 @@ function main() {
     process.exit(1);
   }
 
-  // 2. Verify backup hash
+  // 2. Verify backup hash (accepts both npm and native builds)
   const backupHash = sha256(backupPath);
-  if (backupHash !== EXPECTED_HASH) {
+  const validHashes = Object.values(EXPECTED_HASHES);
+  if (!validHashes.includes(backupHash)) {
     console.error('Error: Backup hash mismatch');
-    console.error(`Expected: ${EXPECTED_HASH}`);
-    console.error(`Got:      ${backupHash}`);
+    console.error(`Expected one of: ${validHashes.join(', ')}`);
+    console.error(`Got:             ${backupHash}`);
     process.exit(1);
   }
-  console.log(`Backup verified (v${EXPECTED_VERSION})`);
+  const buildType = backupHash === EXPECTED_HASHES.native ? 'native' : 'npm';
+  console.log(`Backup verified (v${EXPECTED_VERSION}, ${buildType} build)`);
 
   // 3. Restore from backup
   fs.copyFileSync(backupPath, basePath);
@@ -292,13 +319,23 @@ function main() {
 
     // Try regex-based matching for patterns with variable references
     const regexPatch = createRegexPatch(find, replace);
+    // Also create native-escaped variants for Bun-compiled binaries
+    const findNative = toNativeEscapes(find);
+    const replaceNative = toNativeEscapes(replace);
+    const regexPatchNative = (findNative !== find) ? createRegexPatch(findNative, replaceNative) : null;
+
+    let applied = false;
 
     if (regexPatch) {
       // Use regex matching
       if (regexPatch.regex.test(content)) {
         content = content.replace(regexPatch.regex, regexPatch.replace);
         console.log(`[OK] ${patch.name} (regex, ${regexPatch.varCount} vars)`);
-        appliedCount++;
+        applied = true;
+      } else if (regexPatchNative && regexPatchNative.regex.test(content)) {
+        content = content.replace(regexPatchNative.regex, regexPatchNative.replace);
+        console.log(`[OK] ${patch.name} (regex+native, ${regexPatchNative.varCount} vars)`);
+        applied = true;
       } else {
         console.log(`[SKIP] ${patch.name} (regex not found)`);
       }
@@ -310,10 +347,21 @@ function main() {
         content = content.replace(find, replace);
       }
       console.log(`[OK] ${patch.name}`);
-      appliedCount++;
+      applied = true;
+    } else if (findNative !== find && content.includes(findNative)) {
+      // Try native-escaped variant
+      if (patch.replaceAll) {
+        content = content.split(findNative).join(replaceNative);
+      } else {
+        content = content.replace(findNative, replaceNative);
+      }
+      console.log(`[OK] ${patch.name} (native)`);
+      applied = true;
     } else {
       console.log(`[SKIP] ${patch.name} (not found)`);
     }
+
+    if (applied) appliedCount++;
   }
 
   // 5. Write patched file
