@@ -450,7 +450,7 @@ Check out the [system-prompt folder](system-prompt/) for the patch scripts and f
 
 **Why patching?** Claude Code has flags that let you provide a simplified system prompt from a file (`--system-prompt` or `--system-prompt-file`), so that's another way to go about it. But for the tool descriptions, there's no official option to customize them. Patching the CLI bundle is the only way. Since my patch system handles everything in one unified approach, I'm keeping it this way for now. I might re-implement the system prompt portion using the flag in the future.
 
-**Requirements**: These patches require npm installation (`npm install -g @anthropic-ai/claude-code`). The patching works by modifying the JavaScript bundle (`cli.js`) - other installation methods may produce compiled binaries that can't be patched this way.
+**Supported installations:** npm and native binary (macOS and Linux).
 
 **Important**: If you want to keep your patched system prompt, disable auto-updates by adding this to `~/.claude/settings.json`:
 
@@ -462,7 +462,7 @@ Check out the [system-prompt folder](system-prompt/) for the patch scripts and f
 }
 ```
 
-This applies to all Claude Code sessions regardless of shell type (interactive, non-interactive, tmux). You can manually update later with `npm update -g @anthropic-ai/claude-code` when you're ready to re-apply patches to a new version.
+This applies to all Claude Code sessions regardless of shell type (interactive, non-interactive, tmux). You can manually update later when you're ready to re-apply patches to a new version.
 
 ### Lazy-load MCP tools
 
