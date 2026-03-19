@@ -102,6 +102,11 @@ transcript_path=$(echo "$input" | jq -r '.transcript_path // empty')
 # See: github.com/anthropics/claude-code/issues/13652
 max_context=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
 max_k=$((max_context / 1000))
+if [[ $max_k -ge 1000 ]]; then
+    max_display="$((max_k / 1000))M"
+else
+    max_display="${max_k}k"
+fi
 
 # Calculate context bar from transcript
 if [[ -n "$transcript_path" && -f "$transcript_path" ]]; then
@@ -144,7 +149,7 @@ if [[ -n "$transcript_path" && -f "$transcript_path" ]]; then
         fi
     done
 
-    ctx="${bar} ${C_GRAY}${pct_prefix}${pct}% of ${max_k}k tokens"
+    ctx="${bar} ${C_GRAY}${pct_prefix}${pct}% of ${max_display} tokens"
 else
     # Transcript not available yet - show baseline estimate
     baseline=20000
@@ -165,7 +170,7 @@ else
         fi
     done
 
-    ctx="${bar} ${C_GRAY}~${pct}% of ${max_k}k tokens"
+    ctx="${bar} ${C_GRAY}~${pct}% of ${max_display} tokens"
 fi
 
 # Build output: Model | Dir | Branch (uncommitted) | Context
@@ -180,7 +185,7 @@ if [[ -n "$transcript_path" && -f "$transcript_path" ]]; then
     # Calculate visible length (without ANSI codes) - 10 chars for bar + content
     plain_output="${model} | 📁${dir}"
     [[ -n "$branch" ]] && plain_output+=" | 🔀${branch} ${git_status}"
-    plain_output+=" | xxxxxxxxxx ${pct}% of ${max_k}k tokens"
+    plain_output+=" | xxxxxxxxxx ${pct}% of ${max_display} tokens"
     max_len=${#plain_output}
     last_user_msg=$(jq -rs '
         # Messages to skip (not useful as context)
